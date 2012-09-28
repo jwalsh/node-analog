@@ -1,0 +1,40 @@
+#!/bin/sh
+
+mkdir -p referrer-report/thumbs
+
+URL=$1
+H3="h3. " 
+
+
+echo "h2. $URL" | tee -a referrer-report/out.txt
+
+cp /etc/hosts /etc/hosts.orig
+
+
+for H in prod beta #  soak
+do 
+    echo 
+    echo 
+    echo "$H3 $H"  
+    date 
+    if [ -f /etc/hosts.ps.${H} ] 
+    then
+        cp /etc/hosts.ps.${H} /etc/hosts 
+    else
+        echo Error: /etc/hosts.ps.${H} not found 
+    fi
+    grep bkrtx.com /etc/hosts #  | grep -v '#'
+    phantomjs iframe.js $URL
+
+    THUMB=$(echo $URL | sed 's/[^a-zA-Z0-9]//g')
+    convert -geometry 420x screenshot.png referrer-report/thumbs/${THUMB}.png
+    open referrer-report/thumbs/${THUMB}.png
+
+    echo http://wal.sh/bk/referrer-report/thumbs/${THUMB}.png
+
+done | tee -a referrer-report/out.txt
+
+echo Resetting hosts 
+cp /etc/hosts.orig /etc/hosts 
+grep bkrtx.com /etc/hosts
+scp -r referrer-report jaw@wal.sh:wal.sh/bk

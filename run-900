@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for U in http://wal.sh/bk/tags/tests/900-doTag.html http://wal.sh/bk/tags/tests/901-async.html http://wal.sh/bk/tags/tests/902-noframe.html http://wal.sh/bk/tags/tests/903-noframe-script-head.html http://wal.sh/bk/tags/tests/904-frame-script-head.html
+do 
+    ./run-prod-beta-comp $U         
+done 
