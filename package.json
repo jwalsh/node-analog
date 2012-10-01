@@ -4,7 +4,10 @@
   "main": "analog.js",
   "dependencies": {
     "lazy": "",
-    "parseUri": ""
+    "parseUri": "",
+    "knox": "",
+    "crypto": ""
+
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

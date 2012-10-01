@@ -8,6 +8,14 @@ nodify.run(
     var fs = require("fs");
     var system = require('system');
     var url = require('url');
+    var knox = require('knox');
+
+    var client = knox.createClient(
+      {
+        key: 'AKIAJO4HRLEH2M6O62PQ'
+        , secret: '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'
+        , bucket: 'pharos.wal.sh'
+      });
 
     var h3 = '-------------------------------';
     var h4 = 'h4. ';
@@ -133,7 +141,24 @@ nodify.run(
       function() {
         if (new Date() - page.lastRequest > timeout) {
           console.log('\n- Run completed: ', new Date());
-          page.render('screenshot.png');
+          var completedScreenshot = new Date().getTime() + '.png';
+          page.render(completedScreenshot);
+          fs.readFile(
+            completedScreenshot,
+            function(err, buf){
+              var req = client.put(
+                '/sc/' + completedScreenshot,
+                {
+                  'Content-Length': buf.length,
+                  'Content-Type': 'image/png'
+                });
+              req.on('response', function(res){
+                       if (200 == res.statusCode) {
+                         console.log('saved to %s', req.url);
+                       }
+                     });
+              req.end(buf);
+            });
           phantom.exit();
         }
       }, 100);
